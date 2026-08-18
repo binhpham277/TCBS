@@ -15,8 +15,8 @@ print(f"Date: {today}")
 filter_date = str(today)[5:7] + str(today)[-2:]+ str(today)[:4]
 
 # EXCEL logs folder =============
+# Change to where you want to save Excel logs
 from pathlib import Path
-
 EXCEL_OUTPUT_FOLDER = Path(r"D:/Dropbox/BXCapitals/TCBS_INDEXING/Excels")
 EXCEL_OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
 
@@ -27,6 +27,7 @@ def save_excel(df, filename):
 
 
 # AUTHENTICATION ==================
+# LOAD your TCBS API key using dotenv file
 from dotenv import load_dotenv
 load_dotenv(r"D:/API/API_KEYS.env")
 TCBS_API_KEY = os.getenv("TCBS_API_KEY")
@@ -36,6 +37,7 @@ client = TCBSClient(api_key=TCBS_API_KEY)
 # Indexing position on Regular account
 accountNormal = TCBS_ACC.TCBS_ACC.Normal
 
+# TRADING COST (CURRENT TCBS Scheme)
 trading_cost = 0.03
 tax = 0.1
 
@@ -47,8 +49,7 @@ tax = 0.1
 
 # Load new data using Filter from TCBS (all market) to get market cap info
 dataFileName = "BộLọc_Market All_" + filter_date
-print(dataFileName)
-
+#print(dataFileName)
 import shutil
 source = rf"C:/Users/ACER/Downloads/{dataFileName}.xlsx"
 destination = rf"D:/Dropbox/BXCapitals/TCBS_INDEXING/Market_Data_TCBS/{dataFileName}.xlsx"
@@ -80,7 +81,6 @@ print(f"total current account value: {TCAV}")
 
 
 # TOTAL ACCOUNT VALUE (INCLUDING CASH-IN AND CURRENT EQUITIES)
-# capital = 1116688
 # put zero to flatten the porfolio if needed
 # unit: trieu dong
 capital = TCAV/1000000
