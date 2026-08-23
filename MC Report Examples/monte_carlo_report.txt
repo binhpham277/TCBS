@@ -1,0 +1,320 @@
+
+==============================================================
+                 MONTE CARLO TESTING REPORT
+==============================================================
+
+Generated:
+2026-08-23 20:22:00
+
+
+--------------------------------------------------------------
+INPUT PARAMETERS
+--------------------------------------------------------------
+
+Starting Capital:
+$10,000.00
+
+Win Probability:
+52.3100%
+
+Loss Probability:
+47.6900%
+
+Average Win:
+1.1635%
+
+Average Loss:
+-1.2596%
+
+Trades per Run:
+800
+
+Number of Runs:
+1,000
+
+Total Simulated Trades:
+800,000
+
+
+--------------------------------------------------------------
+EXPECTED VALUE
+--------------------------------------------------------------
+
+Expected Return / Trade:
+0.007924%
+
+Theoretical Final Capital:
+$10,654.38
+
+
+--------------------------------------------------------------
+FINAL CAPITAL
+--------------------------------------------------------------
+
+Average Final Capital:
+$10,543.43
+
+Median Final Capital:
+$9,931.45
+
+Standard Deviation:
+$3,785.61
+
+Best Result:
+$40,522.17
+
+Worst Result:
+$3,101.86
+
+
+--------------------------------------------------------------
+FINAL RETURN
+--------------------------------------------------------------
+
+Average Return:
+5.43%
+
+Median Return:
+-0.69%
+
+Standard Deviation:
+37.86%
+
+Best Return:
+305.22%
+
+Worst Return:
+-68.98%
+
+
+--------------------------------------------------------------
+PROBABILITY
+--------------------------------------------------------------
+
+Probability of Profit:
+48.80%
+
+Probability of Loss:
+51.20%
+
+Probability of Break-even:
+0.00%
+
+
+--------------------------------------------------------------
+FINAL CAPITAL PERCENTILES
+--------------------------------------------------------------
+
+5th Percentile:
+$5,550.32
+
+10th Percentile:
+$6,419.36
+
+25th Percentile:
+$7,984.58
+
+50th Percentile:
+$9,931.45
+
+75th Percentile:
+$12,353.03
+
+90th Percentile:
+$15,742.12
+
+95th Percentile:
+$17,345.19
+
+
+--------------------------------------------------------------
+MAXIMUM DRAWDOWN
+--------------------------------------------------------------
+
+Average Maximum Drawdown:
+-33.48%
+
+Median Maximum Drawdown:
+-32.10%
+
+Best Maximum Drawdown:
+-12.83%
+
+Worst Maximum Drawdown:
+-73.36%
+
+
+Drawdown Percentiles:
+
+5th:
+-53.16%
+
+25th:
+-40.39%
+
+50th:
+-32.10%
+
+75th:
+-25.14%
+
+95th:
+-18.47%
+
+
+--------------------------------------------------------------
+LOSING STREAK
+--------------------------------------------------------------
+
+Average Maximum Losing Streak:
+8.37 trades
+
+Median Maximum Losing Streak:
+8 trades
+
+Worst Maximum Losing Streak:
+16 trades
+
+
+--------------------------------------------------------------
+ACTUAL WIN RATE
+--------------------------------------------------------------
+
+Expected Win Rate:
+52.3100%
+
+Average Actual Win Rate:
+52.2490%
+
+Minimum Actual Win Rate:
+46.2500%
+
+Maximum Actual Win Rate:
+59.5000%
+
+
+--------------------------------------------------------------
+HIGHLIGHTED SIMULATIONS
+--------------------------------------------------------------
+
+MEDIAN RUN
+Simulation:
+#82
+
+Final Capital:
+$9,931.45
+
+Return:
+-0.69%
+
+Actual Win Rate:
+52.25%
+
+Maximum Drawdown:
+-33.70%
+
+Maximum Losing Streak:
+9 trades
+
+
+BEST RUN
+Simulation:
+#835
+
+Final Capital:
+$40,522.17
+
+Return:
++305.22%
+
+Actual Win Rate:
+59.50%
+
+Maximum Drawdown:
+-18.42%
+
+Maximum Losing Streak:
+8 trades
+
+
+WORST RUN
+Simulation:
+#331
+
+Final Capital:
+$3,101.86
+
+Return:
+-68.98%
+
+Actual Win Rate:
+46.25%
+
+Maximum Drawdown:
+-73.36%
+
+Maximum Losing Streak:
+8 trades
+
+
+--------------------------------------------------------------
+INTERPRETATION
+--------------------------------------------------------------
+
+The strategy has a theoretical expected return per trade of:
+
+0.007924%
+
+
+The theoretical compound final capital after
+800 trades is:
+
+$10,654.38
+
+
+The Monte Carlo simulation contains:
+
+1,000 independent simulations
+
+with:
+
+800 trades per simulation.
+
+
+The results represent different possible sequences
+of wins and losses while keeping the specified
+probability and average trade return constant.
+
+
+TOOL LIMITATION
+--------------------------------------------------------------
+
+Because no standard deviation or historical distribution
+of individual winning and losing trades was provided,
+every win is modeled as exactly average value:
+
+1.1635%
+
+
+and every loss is modeled as exactly:
+
+-1.2596%
+
+
+Therefore this simulation primarily measures:
+
+- Robustness of the edge when
+- Sequence risk
+- Win-rate variation
+- Losing streak risk
+- Compounding effects
+- Maximum drawdown
+- Outcome dispersion
+
+
+It does NOT model the real variation in individual
+trade sizes.
+
+==============================================================
+END OF REPORT
+==============================================================
