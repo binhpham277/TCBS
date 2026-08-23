@@ -16,3 +16,5 @@ You need to download a data excel file from TCBS (under filter) first and change
 Each run is a new rebalancing of the account based on current market caps, account size and market prices.
 
 For full liquidation, use MNO_FLATTEN to quickly send full batch sell orders to TCBS.
+
+Use MC Report to test the edge of your trading system. 
