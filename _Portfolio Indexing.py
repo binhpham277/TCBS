@@ -1,5 +1,5 @@
-# THIS ENGINE WILL BUILD AN INDEXING PORTFOLIO, MARKET CAP WEIGHTED
-#==================================================================
+# THIS ENGINE WILL BUILD AN INDEX PORTFOLIO, MARKET CAP WEIGHTED
+#===============================================================
 
 from tcbs import TCBSClient
 import TCBS_ACC
@@ -14,20 +14,12 @@ today = date.today()
 print(f"Date: {today}")
 filter_date = str(today)[5:7] + str(today)[-2:]+ str(today)[:4]
 
-# EXCEL logs folder =============
-# Change to where you want to save Excel logs
-from pathlib import Path
-EXCEL_OUTPUT_FOLDER = Path(r"D:/Dropbox/BXCapitals/TCBS_INDEXING/Excels")
-EXCEL_OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
-
 def save_excel(df, filename):
     filepath = EXCEL_OUTPUT_FOLDER / filename
     df.to_excel(filepath, index=False)
-    print(f"Saved: {filepath}")
-
+    #print(f"Saved: {filepath}")
 
 # AUTHENTICATION ==================
-# LOAD your TCBS API key using dotenv file
 from dotenv import load_dotenv
 load_dotenv(r"D:/API/API_KEYS.env")
 TCBS_API_KEY = os.getenv("TCBS_API_KEY")
@@ -37,72 +29,91 @@ client = TCBSClient(api_key=TCBS_API_KEY)
 # Indexing position on Regular account
 accountNormal = TCBS_ACC.TCBS_ACC.Normal
 
-# TRADING COST (CURRENT TCBS Scheme)
 trading_cost = 0.03
 tax = 0.1
 
+print("Please download Excel data from TCBS before proceed")
+print("Enter the scope of constituents (e.g: 30, 50, 100 or 186):")
+definedScope = input()
+print("Enter 1 for sending real orders. 0 for Testing")
+trading_mode_input = input()
 
 # 0. MASTER CONFIG ===============================================================
 
-# 1. Load new data
-# 2. Update Account Value
+# EXCEL logs folder 
+from pathlib import Path
+EXCEL_OUTPUT_FOLDER = Path(r"D:/Dropbox/BXCapitals/TCBS_INDEXING/Excels") # Excel Logs
+EXCEL_OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
 
 # Load new data using Filter from TCBS (all market) to get market cap info
 dataFileName = "BộLọc_Market All_" + filter_date
-#print(dataFileName)
+print(f"Loading Excel file: {dataFileName}")
+
 import shutil
-source = rf"C:/Users/ACER/Downloads/{dataFileName}.xlsx"
+source = rf"C:/Users/ACER/Downloads/{dataFileName}.xlsx" # Download up-to-date Excel data from TCBS filter which contain marketcap info
 destination = rf"D:/Dropbox/BXCapitals/TCBS_INDEXING/Market_Data_TCBS/{dataFileName}.xlsx"
 shutil.copy(source, destination)
 print("Data file copied successfully!")
-
 dataPath = rf"D:/Dropbox/BXCapitals/TCBS_INDEXING/Market_Data_TCBS/{dataFileName}.xlsx"
-
 
 
 # GET ASSET REPORT
 asset = client.get_asset(accountNormal)['stock']
-#print(asset)
 pd_asset = pd.DataFrame(asset)
-stock_value = (pd_asset['currentPrice'] * pd_asset['totalQtty']).sum()
-print(pd_asset)
-print(f"stocks value: {stock_value}")
+print(f"\nStocks in Porfolio: {len(pd_asset)}")
+
+if len(pd_asset) > 0:
+	stock_value = (pd_asset['currentPrice'] * pd_asset['totalQtty']).sum()
+	print(pd_asset)
+	print("\n")
+	print("-"*68)
+	print(f"Stocks value:	{stock_value:,}")
+else:
+	stock_value = 0
 
 cash = client.get_cash_investment(accountNormal)['data'][0]
 cash_balance = cash.get('cashBalance')
-#print(type(cash))
-#print(len(cash))
-#print(cash)
-print(f"cash balance: {cash_balance}")
+print(f"Cash balance:	{cash_balance:,}")
 
 # Total Current Account Value 
 TCAV = stock_value + cash_balance
-print(f"total current account value: {TCAV}")
+print(f"AUM Value:		{TCAV:,}")
 
 
-# TOTAL ACCOUNT VALUE (INCLUDING CASH-IN AND CURRENT EQUITIES)
-# put zero to flatten the porfolio if needed
+# TOTAL ACCOUNT VALUE (INCLUDING CASH BALANCE AND CURRENT EQUITIES)
+# capital = 1116688
+# capital = 0 (put zero to flatten the porfolio if needed)
 # unit: trieu dong
-capital = TCAV/1000000
-print(f"capital (in millions): {capital}")
 
+capital = TCAV/1000000
+
+print(f"Capital:		{capital} millions")
+
+print("\n")
+print("-"*68)
 
 #======================================
+
 # Scope of constituents
-basketScope = 100
+basketScope = int(definedScope)
 
 # Buffer % for prices fluctuation during process of buying/selling
-cash_buffer = 99
+cash_buffer = 100
 
 # Trading mode (1 = ok trading, 0 = testing)
-trading_mode = 1
+trading_mode = int(trading_mode_input)
+
+AccountValue = capital * 1000000 * cash_buffer / 100
+
+
 
 
 # I. BULIDING PENDING BUY SELL POSITIONS =========================================
 
-AccountValue = capital * 1000000 * cash_buffer / 100
 
-# MARKET CAPITALIZATION DATA =================================
+print(f"\nBuilding a basket of {basketScope} constituents")
+
+# MARKET CAPITALIZATION DATA ====================
 
 data = pd.read_excel(dataPath, sheet_name = 'Filters')
 data_filtered = pd.DataFrame(data, columns = ['Ticker','Exchange','Market Cap'])
@@ -118,9 +129,11 @@ for row in data_filtered.itertuples():
 df_data1 = pd.DataFrame(data1)
 save_excel(df_data1, f"{today}_1_0_Data_allmarket.xlsx")
 
+# filter exchanges and marketcap
+data_filtered = data_filtered[data_filtered["Exchange"] == "HOSE"] # Only buy stocks on HOSE, remove this line if HNX and UPCOM are also interesting to you
+condition_marketCap = data_filtered['Market Cap'] > 0
 
-condition2 = data_filtered['Market Cap'] > 0
-data2 = data_filtered[condition2]
+data2 = data_filtered[condition_marketCap]
 
 # threshold for the largest stocks based on market cap value
 threshold = data2["Market Cap"].sort_values(ascending=False).iloc[basketScope]
@@ -134,8 +147,8 @@ data3 = data3.rename(columns={"Ticker": "symbol"})
 totalMarketCap = data3["Market Cap"].sum()
 #print(f"Total Market Cap: {totalMarketCap} ty dong")
 
-# threshold 100 ==============
-# refference and study purpose
+# threshold 100 =====================================================
+# refference and study purpose, not affect the choice of basket scope
 # ============================
 threshold_100 = data2["Market Cap"].sort_values(ascending=False).iloc[100]
 condition_100 = data2['Market Cap'] > threshold_100
@@ -239,10 +252,22 @@ df_ARTT = pd.DataFrame(assetsReadyToTrade)
 save_excel(df_ARTT, f"{today}_1_5_ARTT.xlsx")
 
 # add Prices and Exchange to ASSET BOOKS
-df_AssetsBook1 = df_ARTT.merge(df_data1, on="symbol", how="left")
-df_AssetsBook2 = df_AssetsBook1.merge(df_market, on="symbol", how="left")
+print(f"\nCurrent holding: {len(df_ARTT)} stocks")
 
-df_AssetsBook = df_AssetsBook2
+if len(df_ARTT) > 0:
+	df_AssetsBook1 = df_ARTT.merge(df_data1, on="symbol", how="left")
+	df_AssetsBook2 = df_AssetsBook1.merge(df_market, on="symbol", how="left")
+	df_AssetsBook = df_AssetsBook2
+else:
+	# create a sythetic porfolio with one random stock to merge DataFrame, in case the account had no stock at the moment
+	sample_stock_s = df_marketOutlook.loc[10, "symbol"]
+	sample_stock_p = df_marketOutlook.loc[10, "refPrice"]
+	print(f"sample stock ticker: {sample_stock_s}")
+	print(f"sample stock price: {sample_stock_p}")
+	sample_portolio = [{"symbol":sample_stock_s,"availTrading":0,"currentPrice":sample_stock_p,"quantityBook":0}]
+	df_SampleAssetBook = pd.DataFrame(sample_portolio)
+	df_AssetsBook = df_SampleAssetBook
+
 save_excel(df_AssetsBook, f"{today}_1_6_AssetsBook.xlsx")
 
 
@@ -293,6 +318,7 @@ df_Tracker_sharesDifferences["Trigger"] = np.sign(df_Tracker_sharesDifferences["
 
 
 
+
 # II. ORDER ENTRY ===========================================================
 
 # PREPARE PENDING ORDERS ==========
@@ -320,7 +346,7 @@ for row in df_Tracker_sharesDifferences.itertuples():
 	best_bid = max(row[9], row[11], row[13])
 	best_ask = min(row[10], row[12], row[14])
 
-	# including ref price in case there's no current bid/asl
+	# including ref price in case there's no current bid/as
 	bid_prices = [best_bid, row[15]]
 	ask_prices = [best_ask, row[15]]
 
@@ -350,11 +376,12 @@ df_pendingPosion = pd.DataFrame(pendingPosition)
 
 
 
-#drop row where both buy & sell is zero
+# drop row where both buy & sell is zero
 df_pendingPosion = df_pendingPosion[~((df_pendingPosion["quantity_buy"] == 0) & (df_pendingPosion["quantity_sell"] == 0))]
 save_excel(df_pendingPosion, f"{today}_2_0_PendingPosion.xlsx")
 
 df_pendingPosion.reset_index(drop=True, inplace=True)
+print(f"\nPending positions:")
 print(df_pendingPosion)
 
 
@@ -369,26 +396,35 @@ cost_sell = total_sell_value * (trading_cost + tax) / 100
 total_cost = cost_buy + cost_sell
 total_cost_pct = total_cost/TCAV*100
 
+print("\n")
 print(f"trading cost in $: {f'{total_cost:.2f}'} VND")
 print(f"trading cost in %: {total_cost_pct} %")
 
-
-from openpyxl import load_workbook
-FILE = "_log_trading_cost.xlsx"
-# Open existing workbook
-wb = load_workbook(FILE)
-# Select worksheet
-ws = wb["Sheet1"]
-# New row
-new_row = [today, total_cost, total_cost_pct]
-# Append the row
-ws.append(new_row)
-# Save
-wb.save(FILE)
-print("logged trading cost to Excel!")
+# LOG THE TRADING COST IF REAL TRADING HAPPENS
+if trading_mode == 1:
+	from openpyxl import load_workbook
+	FILE = "log_trading_cost.xlsx"
+	# Open existing workbook
+	wb = load_workbook(FILE)
+	# Select worksheet
+	ws = wb["Sheet1"]
+	# New row
+	new_row = [today, total_cost, total_cost_pct]
+	# Append the row
+	ws.append(new_row)
+	# Save
+	wb.save(FILE)
+	print("logged trading cost to Excel!")
+else:
+	pass
 
 
 # ORDER ENTRY ===========================================
+
+print("\n")
+print("-"*68)
+print("Order Entries:")
+print("\n")
 
 for row in df_pendingPosion.itertuples():
 
@@ -408,19 +444,19 @@ for row in df_pendingPosion.itertuples():
 	sell_price = row[12]
 
 	def order_entry_buy(trading_mode, account, symbol, buy_price, quantity):
-		if trading_mode == 1:
+		if trading_mode == 1 and buy_price > 0:
 			order = client.place_order(account, symbol, 'NB', buy_price, quantity, 'LO')
 		else:
 			pass
 
 	def order_entry_sell(trading_mode, account, symbol, sell_price, quantity):
-		if trading_mode == 1:
+		if trading_mode == 1 and sell_price > 0:
 			order = client.place_order(account, symbol, 'NS', sell_price, quantity, 'LO')
 		else:
 			pass
 
 	# BUY ===============================================
-	print(f"PLACING BUY {total_buy} SHARES for {symbol}")
+	print(f"BUYING {total_buy} SHARES for {symbol}")
 	if Q_B_100 > 0:
 
 		confirmation = (f"Trade no.{tradeNo}: placing buy for: {symbol}, at price: {buy_price/1000}, quantity: {Q_B_100}")
@@ -455,7 +491,7 @@ for row in df_pendingPosion.itertuples():
 	print("\n")
 
 	# SELL =================================================
-	print(f"PLACING SELL {total_sell} SHARES for {symbol}")
+	print(f"SELLING {total_sell} SHARES for {symbol}")
 	if Q_S_100 > 0:
 
 		confirmation = (f"Trade no.{tradeNo}: placing sell for: {symbol}, at price: {sell_price/1000}, quantity: {Q_S_100}")
@@ -494,12 +530,4 @@ for row in df_pendingPosion.itertuples():
 # ======================================
 
 print("Successful!")
-print("See you next week!")
-
-#import yfinance as yf
-#ticker = yf.Ticker("VND=X")
-#USDrate = ticker.history(period="1d")["Close"].iloc[-1]
-#print(f"USD/VND = {USDrate:.2f}")
-#portfolio_value_in_dollar = round((captital / USDrate), 3)
-#print(f"built a portfolio of {portfolio_value_in_dollar} millions dollar")
 
