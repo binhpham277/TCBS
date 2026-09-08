@@ -11,8 +11,8 @@ MKI_SIG (Market Index & Signal)
 MKI_SIG is a tool to generate sigma report from all equities market, using optimized 11 trading days period.
 As I use VNIndex to calculate overall market volatility for some measures, this tool will download VNIndex data to an Excel file.
 Sigmas are generated for the most recent 5 days per market for more thorough criteria, as some won't enter a new buy for 2 consecutive 2 sigmas event and some will.
-eHD is short for expected Holding Days. In my recent trading practice, I normally hold eHDx2 as historically I tend to close trades prematuredly.
-A hypothetic win-loss ratio (WLR) is also calculated based on the number of intraday trades from TCBS side.
+eHD is short for "expected Holding Days". In my recent trading practice, I normally hold trades for a duration of eHDx2 as historically I tend to close trades prematurely.
+A hypothetic win-loss ratio (WLR) is also calculated based on the number of intraday trades from TCBS side, this is used for reference, and it should not be your ultimate win loss ratio.
 Historical Daily price Data is provided using Vnstock API.
 
 MPL (Market Price Levels)
@@ -25,13 +25,13 @@ but it can be tweaked for the short side as well (list_up -> list_down).
 
 Portfolio_Indexing
 ------------------
-Portfolio_Indexing is builder for a market cap weighted basket. You own your index fund with read stocks.
-Number of stocks can be defined at the very top; any number is valid. Could be 50 (for VN50) or even 186 for your own basket of 186 major stocks.
+Portfolio_Indexing is builder for a market cap weighted basket. You'll have your own index fund with real stocks.
+Number of stocks can be defined at the very top; any number is valid. 50 for VN50, 100 for VN100, and even 186 for your own basket of 186 major stocks.
 The engine needs an Excel data file (download from TCBS / Filter) to read and run.
-Currently it is setup to build inside the normal account but can be changed to margin account easily.
-Each run is a new rebalancing of the account based on current market caps, account size and market prices.
+Currently it is setup to build inside the normal account (or cash account) but can be changed to margin account easily.
+Each run is a rebalancing based on current market caps, account size and market prices.
 This tool is handy for traders who want a real equities basket, or who really do not like the idea of ETF or mutual fund indexing funds.
-Technically, buying an ETF or an indexing fund is easier, but hey I like to see my stocks in the cash account as I have some unused money there.
+Technically, buying an ETF or an indexing fund is much easier, but hey I like to see my stocks in the cash account as I have some unused money there.
 
 MNO_FLATTEN (Full liquidation)
 ------------------------------
@@ -40,15 +40,15 @@ Use this or Portfolio_Indexing before going on vacation is a smart choice.
 
 MC Report
 ---------
-MC Report is Monte-Carlo report which tests the edge of trading system.
-This engine is simple and it takes basic inputs: probability for win/loss, and average win/loss
+Monte-Carlo report which tests the edge of trading system.
+This is simple and it only takes basic inputs: probability for win/loss, and average win/loss.
 
 MPP (Making Push/Pull)
 ----------------------
-This simple engine is designed to do one simple thing: move the price of existing orders to the closest bid/ask so the orders can be filled more quickly.
-The engine will randomly check the cash account and margin account to see if there is any pending fill.
-If the trading price is far from bid1/ask1 pair, it will change the price to bid1 for buy and ask1 for sell accordingly.
-In my trading practice, this engine is scheduled to run every few minutes.
+This tool is designed to do one simple thing: move the price of existing orders to the closest bid/ask so the orders can be filled more quickly.
+It will randomly check the cash account and margin account to see if there is any pending fill.
+If the trading price is far from bid1/ask1 pair, it will change the price accordingly (bid1 for buy and ask1 for sell).
+Personally, in practice I schedule this engine to run every few minutes.
 
 
 Disclaimer
