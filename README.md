@@ -51,9 +51,9 @@ If the trading price is far from bid1/ask1 pair, it will change the price to bid
 In my trading practice, this engine is scheduled to run every few minutes.
 
 
-Disclaimer:
-This library is personal written tools that author used in his trading process. It is not trading or investment recommendation.
-This library is provided "as is" without warranty of any kind.
-Trading involves substantial risk of loss.
+Disclaimer
+----------
+This library is personal written tools that author used in his trading process. It is not trading recommendation or investment advice.
+This library is provided "as is" without warranty of any kind. Trading involves substantial risk of loss.
 Always verify your code and test thoroughly before executing real trades.
 The author is not responsible for any financial losses incurred through the use of this library.
